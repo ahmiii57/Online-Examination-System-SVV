@@ -1,0 +1,30 @@
+types
+    StudentId = token;
+    ExamId = token;
+    Score = nat;
+
+state ExamSys of
+    students  : set of StudentId
+    submitted : map StudentId to set of ExamId
+    scores    : map (StudentId * ExamId) to Score
+inv mk_ExamSys(sts, sub, scs) ==
+    (dom sub subset sts) and
+    (dom scs = { mk_(s,e) | s in set dom sub & e in set sub(s) })
+end
+
+operations
+    -- Start Exam: Register student entry for an exam
+    public StartExam(s: StudentId, e: ExamId) ==
+    (
+        submitted(s) := submitted(s) union {e}
+    )
+    pre s in set dom submitted and e not in set submitted(s)
+    post submitted = submitted~ ++ {s -> (submitted~(s) union {e})};
+
+    -- Submit Exam: Assign marks and complete submission
+    public SubmitExam(s: StudentId, e: ExamId, sc: Score) ==
+    (
+        scores(mk_(s,e)) := sc
+    )
+    pre s in set dom submitted and e in set submitted(s) and mk_(s,e) not in set dom scores
+    post scores = scores~ ++ {mk_(s,e) -> sc};
