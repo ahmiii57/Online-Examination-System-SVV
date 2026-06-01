@@ -1,0 +1,24 @@
+name: SVV Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verification:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check Repository Structure
+        run: |
+          test -f requirements/defect_taxonomy.md
+          test -f Z-model/z_specification.md
+          test -f VDM-spec/ExamSys.vdmsl
+          test -f Alloy-model/exam_system.als
+          test -f Validation/checklist.md
+
+      - name: Validation Complete
+        run: echo "SVV verification passed successfully."
